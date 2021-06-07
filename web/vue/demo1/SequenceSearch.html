@@ -1,0 +1,43 @@
+<!doctype HTML>
+<head>
+	<title>Research Milestone</title>
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body>
+	<div id="test">
+		<h1>Vue Demo Project</h1>
+		<p>This page finds the number of occurences of a given search term in a given sequence.<br>It uses Vue's reactivity to update as soon as the fields are changed</p>
+		<p>Search Term: {{ search }}</p>
+		<p>Sequence: {{ sequence }}</p>
+		<p>Term Instances: {{ out }} </p>
+		<input v-model="search" placeholder="Enter Search Term">
+		<br>
+		<textarea v-model="sequence" placeholder="Enter Sequence"></textarea>
+	</div>
+	
+	<script>
+		var test = new Vue( {
+			el: "#test",
+			data: {
+				search: "G",
+				sequence: "AGGCTACGTGAACG",
+			},
+			computed: {
+				out: function() {
+					var count = 0
+					for (let i = 0; i < this.sequence.length; i++) {
+						for (let j = 0; j < this.search.length; j++) {
+							if (this.sequence[i+j] != this.search[j]) {
+								break
+							} else if (j == (this.search.length - 1)) {
+								count ++
+							}
+						}
+					}
+					return count
+				}
+			}
+		} )
+
+	</script>
+</body>

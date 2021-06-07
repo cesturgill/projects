@@ -1,0 +1,145 @@
+<html>
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js"></script>
+	<script src = "/Users/clair/Projects/Javascript/html2pdf/dist/html2pdf.bundle.min.js"></script>
+	<title>Bingo Test</title>
+	<link rel="stylesheet" type="text/css" href="BingoStyle.css">
+</head>
+<body>
+	<h1>Logical Fallacy Bingo</h1>
+	<p>Free Space<input type="text" id="freeSpace" value="Free Space"></p>
+	<p>Player Names (Space separated for multiple cards)<input type="text" id = "name" value="Player 1"></p>
+	<p># of Cards (PDF Only)<input type="number" id="cardNum" value=1></p>
+	<button onclick="genInt()">Generate Interactive Card</button>
+	<button onclick="genPDF()">Generate PDF</button>
+	<br>
+	<button onclick="reset()">Reset</button>
+	<br><br>
+	<table id = "table" class = "center">
+		<tr><th colspan="5">Detecting Deception: Fallacy Bingo</th></tr>
+		<tr><th id = "namefield" colspan="5"></th></tr>
+		<tr>
+			<td id = "00" onclick = "shade(this)"></td>
+			<td id = "01" onclick = "shade(this)"></td>
+			<td id = "02" onclick = "shade(this)"></td>
+			<td id = "03" onclick = "shade(this)"></td>
+			<td id = "04" onclick = "shade(this)"></td>
+		</tr>
+		<tr>
+			<td id = "10" onclick = "shade(this)"></td>
+			<td id = "11" onclick = "shade(this)"></td>
+			<td id = "12" onclick = "shade(this)"></td>
+			<td id = "13" onclick = "shade(this)"></td>
+			<td id = "14" onclick = "shade(this)"></td>
+		</tr>
+		<tr>
+			<td id = "20" onclick = "shade(this)"></td>
+			<td id = "21" onclick = "shade(this)"></td>
+			<td id = "22" onclick = "shade(this)"></td>
+			<td id = "23" onclick = "shade(this)"></td>
+			<td id = "24" onclick = "shade(this)"></td>
+		</tr>
+		<tr>
+			<td id = "30" onclick = "shade(this)"></td>
+			<td id = "31" onclick = "shade(this)"></td>
+			<td id = "32" onclick = "shade(this)"></td>
+			<td id = "33" onclick = "shade(this)"></td>
+			<td id = "34" onclick = "shade(this)"></td>
+		</tr>
+		<tr>
+			<td id = "40" onclick = "shade(this)"></td>
+			<td id = "41" onclick = "shade(this)"></td>
+			<td id = "42" onclick = "shade(this)"></td>
+			<td id = "43" onclick = "shade(this)"></td>
+			<td id = "44" onclick = "shade(this)"></td>
+		</tr>
+	</table>
+	<div id = "cards"></div>
+	<a href="https://drsturgill.wordpress.com/detecting-deception-book/">Get The Book!</a>
+</body>
+<script>
+
+	function getList() {
+		var elements = ["Personal Attack", "Poisoning the Well", "The Straw Man", "Appeal to Hypocrisy", "Red Herring", "Black and White", "Slippery Slope", "Fallacy of Fallacies", "Faulty Analogy", "Irrelevant Conclusion", "Hasty Generalization", "Division Fallacy", "Composition Fallacy", "Begging the Question", "Appeal to Purity","Equivocation", "Sunk Cost", "Appeal to Pity", "Appeal to Force", "Appeal to Ignorance", "Appeal to Authority", "Appeal to Tradition", "Appeal to Popularity", "The Big Lie", "Ignoring the Base Rate", "False Cause", "Hidden Variable", "Useless Precision", "Naïve Probability", "Deceiving Charts", "Misrepresented Polls"];
+		for (let i = elements.length - 1; i > 0; i--) {
+			var swap = Math.floor(Math.random() * (i + 1));
+			var temp = elements[swap];
+			elements[swap] = elements[i];
+			elements[i] = temp;
+		}
+		elements[12] = document.getElementById("freeSpace").value;
+		return elements;
+	}
+
+	function generate(iter) {
+	elements = getList();
+	var tout = "<table><tr><th colspan=\"5\">Detecting Deception: Fallacy Bingo</th></tr>";
+	var names = document.getElementById("name").value.split(" ");
+	tout += "<tr><th colspan=\"5\">Player: ";
+	if (names[iter] == undefined) {
+		tout += "Player " + (iter + 1);
+	} else {
+		tout += names[iter];
+		}
+	tout += "</th></tr>";
+	for (let i = 0; i < 5; i++) {
+		tout += "<tr>";
+		for (let j = 0; j < 5; j++) {
+			tout += "<td>" + elements[5*i + j] + "</td>";
+		}
+		tout += "</tr>";
+	}
+	tout += "</table>"
+	tout += "<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>";
+	document.getElementById("cards").innerHTML += tout;
+	//document.getElementById("table").innerHTML = tout;
+	}
+
+
+function genInt() {
+	reset();
+	elements = getList();
+	document.getElementById("namefield").innerHTML = document.getElementById("name").value;
+	for (let i = 0; i < 5; i++) {
+		for (let j = 0; j < 5; j++) {
+			document.getElementById(i.toString() + j.toString()).innerHTML = elements[5*i + j];
+		}
+	}
+}
+
+
+function genPDF() {
+	var doc = new jsPDF();
+	for (let i = 0; i < document.getElementById("cardNum").value; i++) {
+	generate(i);
+	}
+	out = document.getElementById("cards").innerHTML;
+	out = out.substring(0, out.length-80);
+	document.getElementById("cards").innerHTML = out;
+	/*doc.addHTML(document.getElementById("table"), 20, 20, function now() {
+		doc.save("Test.pdf");
+	})*/
+	var opt = {
+		margin: [17, 20, 20, 20],
+		filename: 'Bingo.pdf'
+	}
+	//var worker = html2pdf().from(document.getElementById("table")).toContainer().toCanvas().toImg().toPdf();
+	html2pdf(document.getElementById("cards"), opt);
+}
+
+function shade(elem) {
+	document.getElementById(elem.id).style.backgroundColor = "lightgrey";
+}
+
+function reset() {
+	for (let i = 0; i < 5; i++) {
+		for (let j = 0; j < 5; j++) {
+			document.getElementById(i.toString() + j.toString()).style.backgroundColor = "white";
+		}
+	}
+	document.getElementById("cards").innerHTML = "";
+}
+</script>
+</html>
